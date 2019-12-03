@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="rollingAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/web_independence.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/web_%d{yyyy_MM_dd}.log</fileNamePattern>
+        </rollingPolicy>
+        <encoder><!-- 必须指定，否则不会往文件输出内容 -->
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{5} - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <append>false</append>
+        <prudent>false</prudent>
+    </appender>
+
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{5} - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+    <root level="info">
+        <appender-ref ref="stdout"/>
+        <appender-ref ref="rollingAppender" />
+    </root>
+
+</configuration>

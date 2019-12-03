@@ -1,0 +1,64 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.3.3.RELEASE")
+    }
+}
+def denyProject = ['nezha_server']
+
+
+//-------------------------------------------------------
+configure(allprojects) { project ->
+    if (project.name in denyProject) {
+        return
+    }
+    apply plugin: 'java'
+    sourceCompatibility = 1.8
+    compileJava.options.encoding = 'UTF-8'
+    repositories {
+        mavenLocal()
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+        mavenCentral()
+    }
+    ext.rootProjectLibs = new File(rootProject.rootDir, 'libs').getAbsolutePath()
+    ext.jarTree = fileTree(dir: 'libs', include: '**/*.jar')
+    ext.jarTree += fileTree(dir: rootProjectLibs, include: '**/*.jar')
+    dependencies {
+        compile jarTree
+    }
+
+
+    //以下为需要boot启动的项目
+
+    apply plugin: 'spring-boot'
+
+    dependencies {
+        compile 'org.springframework.boot:spring-boot-starter'
+        compile 'org.springframework.boot:spring-boot-starter-logging'
+        compile 'org.springframework.boot:spring-boot-starter-web'
+        //辅助工具
+        compile 'com.google.guava:guava:19.0'
+        //etcd用http工具
+        compile 'org.apache.httpcomponents:httpasyncclient:4.1.1'
+
+        //json转换工具
+        compile 'com.google.code.gson:gson:2.3.1'
+
+        //per4j 日志输出方法的运行时间
+        compile 'org.perf4j:perf4j:0.9.16'
+
+       // testCompile 'org.springframework.boot:spring-boot-starter-test'
+        testCompile('junit:junit:4.12')
+        testCompile('org.springframework:spring-test:4.2.4.RELEASE')
+
+    }
+
+    task createJavaProject << {
+        sourceSets*.java.srcDirs*.each { it.mkdirs() }
+        sourceSets*.resources.srcDirs*.each { it.mkdirs() }
+    }
+}
